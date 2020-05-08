@@ -11,6 +11,8 @@ const config = {
     },
     port: 27017,
     db: 'mongodb://localhost:27017/mmscience',
+    // jwtKey: 'WgiOquLvwQpL2S4.O.ZJCA',
+    jwtSecret: process.env.jwtSecret,
     gmailAuth: {
       user: 'noreply.mmscience@gmail.com',
       name: '"MM SCIENCE"',
