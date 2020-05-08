@@ -1,0 +1,31 @@
+{
+  "name": "api.mmscience",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nayyaung9/api.mmscience.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/nayyaung9/api.mmscience/issues"
+  },
+  "homepage": "https://github.com/nayyaung9/api.mmscience#readme",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "body-parser": "^1.19.0",
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "jsonwebtoken": "^8.5.1",
+    "mongoose": "^5.9.12",
+    "multer": "^1.4.2",
+    "nodemailer": "^6.4.6",
+    "path": "^0.12.7"
+  }
+}
