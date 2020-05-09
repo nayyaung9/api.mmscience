@@ -8,5 +8,13 @@ module.exports = app => {
   app
     .route('/api/posts')
     .get(verifyToken, catchError(postController.fetchAllPosts))
+    .post(verifyToken, catchError(postController.createPost));
+
+  app
+    .route('/api/post/:unique')
+    .get(postController.getPostDetail);
+
+  app
+    .route('/api/feature_image/upload', postController.featuredImageUpload);
 
 }

@@ -6,6 +6,13 @@ var TagSchema = new Schema({
     type: String,
     required: true,
   },
+  description: {
+    type: String,
+  },
+  user_id: {
+    type: Schema.Types.ObjectId,
+    ref: 'User',
+  },
 }, {
   timestamps: true
 });

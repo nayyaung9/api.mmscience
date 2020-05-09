@@ -21,6 +21,7 @@ exports.register = async (req, res) => {
 
 exports.login = (req, res, next) => {
   const { email, password } = req.body;
+  console.log(req.body);
   User.findOne({ email }, (err, user) => {
     if(err) {
       return res.status(500).send('Error on the server' + err);

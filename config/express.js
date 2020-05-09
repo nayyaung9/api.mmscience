@@ -1,5 +1,6 @@
 const express = require('express'),
   router = express.Router(),
+  path = require('path'),
   glob = require('glob'),
   bodyParser = require('body-parser'),
   cookieParser = require('cookie-parser'),
@@ -30,6 +31,34 @@ module.exports = function(app, config) {
     // example socket testing index.html
     app.get('/', function(req, res) {
       res.sendfile('public/index.html');
+    });
+
+    app.get('/public/featured_image/:imageName', (req, res) => {
+      var options = {
+        root: path.join(__dirname, '../public/featured_image/'),
+      }
+      var fileName = req.params.imageName;
+      res.sendFile(fileName, options, function (err) {
+        if (err) {
+          console.log(err);
+        } else {
+         console.log('image sent')
+        }
+      });
+    });
+
+    app.get('/public/profile/:imageName', (req, res) => {
+      var options = {
+        root: path.join(__dirname, '../public/profile/'),
+      }
+      var fileName = req.params.imageName;
+      res.sendFile(fileName, options, function (err) {
+        if (err) {
+          // next(err)
+        } else {
+          console.log('Sent:', fileName)
+        }
+      });
     });
 
     const routes = glob.sync(config.root + '/app/routes/*.js');
