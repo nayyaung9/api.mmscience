@@ -3,6 +3,7 @@ const CONFIG = require('../../config/db');
 
 function verifyToken(req, res, next) {
   const token = req.headers['x-access-token'];
+  console.log('to', token);
   if (!token)
     return res.status(403).send({ auth: false, message: 'No token provided.' });
 

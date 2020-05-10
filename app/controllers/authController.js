@@ -10,8 +10,22 @@ exports.register = async (req, res) => {
   const newUser = new User(req.body);
   try {
     const result = await newUser.save();
-
-    return res.status(200).json({ success: true, data: result });
+    if(result) {
+      var token = jwt.sign(
+        { credentials: `${result._id}.${CONFIG.jwtSecret}.${result.email}` },
+        CONFIG.jwtSecret,
+        { expiresIn: '1h' },
+      );
+      const credentials = {
+        id: result._id,
+        fullname: result.fullname,
+        avatar_url: result.avatar_url,
+        email: result.email,
+        token: token,
+      };
+      console.log(credentials);
+      return res.status(200).json({ success: true, data: credentials });
+    }
   } catch (err) {
     if (err.name === 'MongoError' && err.code === 11000) {
       return res.status(500).send('User already exist!');
