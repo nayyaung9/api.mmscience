@@ -26,6 +26,12 @@ const config = {
     },
     port: 27017,
     db: `mongodb://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@ds229088.mlab.com:29088/mmscience`,
+    jwtSecret: process.env.jwtSecret,
+    gmailAuth: {
+      user: 'noreply.mmscience@gmail.com',
+      name: '"MM SCIENCE"',
+      pass: 'mmscience!@#',
+    },
   },
 }
 
