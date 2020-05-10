@@ -21,12 +21,19 @@ exports.createTag = async (req, res) => {
   }
 }
 
+exports.getTagDetail = async (req, res) => {
+  const { name } = req.params;
+  const tag = await Tag.findOne({ name });
+  if(!tag) return res.status(404).send('Tag not found');
+  return res.status(200).json({ succes: true, data: tag });
+}
+
 exports.detailTagPosts = async (req, res) => {
   const { name } = req.params;
-  const tagPosts = await Post.find({}).populate({
+  await Post.find({}).populate({
     path  : 'tags',
     match : { name: { $regex: name } }
-  }).populate('user', '-_id -email -password -__v').populate('tags').exec((err, items) => {
+  }).populate('user', '-_id -email -password -__v').exec((err, items) => {
     const data = items.filter(item => Object.keys(item.tags).length >= 1);
     return res.status(200).json({ success: true, data });
   });
@@ -34,7 +41,6 @@ exports.detailTagPosts = async (req, res) => {
 
 exports.deleteTag = async (req, res) => {
   const { id } = req.params;
-  console.log(id);
   return await Tag.findByIdAndRemove(id, (err) => {
     if(err) return res.send('Tag cannot be delete')
     res.send('Delete Successfully');

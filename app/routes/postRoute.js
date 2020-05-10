@@ -15,6 +15,6 @@ module.exports = app => {
     .get(postController.getPostDetail);
 
   app
-    .route('/api/feature_image/upload', postController.featuredImageUpload);
-
+    .route('/api/feature_image/upload')
+    .post(verifyToken, catchError(postController.featuredImageUpload));
 }

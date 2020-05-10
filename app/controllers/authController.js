@@ -2,6 +2,7 @@
 
 const User = require('../models/User');
 const jwt = require('jsonwebtoken');
+const bcrypt = require('bcrypt');
 const CONFIG = require('../../config/db');
 
 exports.register = async (req, res) => {
@@ -21,20 +22,18 @@ exports.register = async (req, res) => {
 
 exports.login = (req, res, next) => {
   const { email, password } = req.body;
-  console.log(req.body);
   User.findOne({ email }, (err, user) => {
     if(err) {
       return res.status(500).send('Error on the server' + err);
     }
     if (!user) {
-      return res.status(404).send('No user found');
+      return res.status(404).send('User not found');
     }
-
-    user.isCorrectPassword(password, function (err, same) {
+    bcrypt.compare(password, user.password, function(err, result) {
       if (err) {
-        return res.status(401).send('Unauthorized');
+        return res.status(401).send('Email or Password is incorrect');
       }
-      if(user) {
+      if(result) {
         var token = jwt.sign(
           { credentials: `${user._id}.${CONFIG.jwtSecret}.${user.email}` },
           CONFIG.jwtSecret,
@@ -48,6 +47,8 @@ exports.login = (req, res, next) => {
           token: token,
         };
         return res.status(200).json({ success: true, data: credentials });
+      } else {
+        return res.status(401).send('Email or Password is incorrect');
       }
     });
   });

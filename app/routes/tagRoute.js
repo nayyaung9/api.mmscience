@@ -10,6 +10,12 @@ module.exports = app => {
     .get(verifyToken, catchError(tagController.fetchAllTags))
     .post(verifyToken, catchError(tagController.createTag));
 
+  // this route is to fetch only tag detail
+  app
+    .route('/api/tag/:name')
+    .get(verifyToken, catchError(tagController.getTagDetail));
+
+  // this route is to fetch posts that belongs to :name tag
   app.route('/api/tags/:name')
     .get(verifyToken, catchError(tagController.detailTagPosts));
   app.route('/api/tags/:id/delete')
