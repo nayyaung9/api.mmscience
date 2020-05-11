@@ -15,7 +15,7 @@ exports.createTag = async (req, res) => {
     return res.status(200).json({ succes: true, data: result });
   } catch (err) {
     if (err.name === 'MongoError' && err.code === 11000) {
-      return res.status(500).send('Tag already exist!');
+      return res.status(403).send('Tag already exist!');
     }
     return res.status(500).send(err.message);
   }
