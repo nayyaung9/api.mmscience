@@ -9,16 +9,22 @@ exports.fetchAllTags = async (req, res) => {
 }
 
 exports.createTag = async (req, res) => {
-  const tag = new Tag(req.body);
-  try {
-    const result = await tag.save();
-    return res.status(200).json({ succes: true, data: result });
-  } catch (err) {
-    if (err.name === 'MongoError' && err.code === 11000) {
-      return res.status(403).send('Tag already exist!');
+  const tag = Tag.findOne({ name: req.body.name });
+  if(!tag) {
+    const newTag = new Tag(req.body);
+    try {
+      const result = await newTag.save();
+      return res.status(200).json({ succes: true, data: result });
+    } catch (err) {
+      if (err.name === 'MongoError' && err.code === 11000) {
+        return res.status(403).send('Tag already exist!');
+      }
+      return res.status(500).send(err.message);
     }
-    return res.status(500).send(err.message);
+  } else {
+    return res.status(403).send('Tag a;ready exist');
   }
+  
 }
 
 exports.getTagDetail = async (req, res) => {
