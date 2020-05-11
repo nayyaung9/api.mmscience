@@ -67,3 +67,10 @@ exports.login = (req, res, next) => {
     });
   });
 }
+
+exports.verify = async (req, res) => {
+  const { email } = req.credentials;
+  const user = await User.findOne({ email });
+  if(!user) res.status(404).send(false);
+  return res.status(200).send(true);
+}

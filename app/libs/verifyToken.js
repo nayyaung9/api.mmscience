@@ -3,7 +3,6 @@ const CONFIG = require('../../config/db');
 
 function verifyToken(req, res, next) {
   const token = req.headers['x-access-token'];
-  console.log('to', token);
   if (!token)
     return res.status(403).send({ auth: false, message: 'No token provided.' });
 
@@ -22,7 +21,7 @@ function verifyToken(req, res, next) {
 }
 
 function decodedCredentials(decoded) {
-  let credentials = decoded.credentials.split(`.${CONFIG.jwtKey}.`);
+  let credentials = decoded.credentials.split(`.${CONFIG.jwtSecret}.`);
   return {
     userId: credentials[0],
     email: credentials[1],

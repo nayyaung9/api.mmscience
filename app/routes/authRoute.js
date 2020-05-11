@@ -8,4 +8,6 @@ module.exports = app => {
   app.route('/api/register').post(catchError(authController.register));
 
   app.route('/api/authenticate').post(authController.login);
+
+  app.route('/api/user/verify').get(verifyToken, authController.verify);
 };
