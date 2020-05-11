@@ -10,7 +10,8 @@ exports.fetchAllTags = async (req, res) => {
 
 exports.createTag = async (req, res) => {
   const tag = Tag.findOne({ name: req.body.name });
-  if(!tag) {
+  if(tag) {
+    console.log('create');
     const newTag = new Tag(req.body);
     try {
       const result = await newTag.save();
@@ -22,6 +23,7 @@ exports.createTag = async (req, res) => {
       return res.status(500).send(err.message);
     }
   } else {
+    console.log('not work');
     return res.status(403).send('Tag a;ready exist');
   }
   
