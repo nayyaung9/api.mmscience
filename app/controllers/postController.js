@@ -21,7 +21,8 @@ exports.createPost = async (req, res) => {
       tags,
       feature_image: file,
     });
-    return await post.save();
+    await post.save();
+    return res.status(200).json({ success: true, data: post });
   } catch (err) {
     if (err.name === 'MongoError' && err.code === 11000) {
       return res.status(500).send('There is a problem while creating a post');
@@ -31,7 +32,7 @@ exports.createPost = async (req, res) => {
 }
 
 exports.getPostDetail = async (req, res) => {
-  const post = await Post.findOne({ unique: req.params.unique }).select('-_id -__v').populate('user', '-__v');
+  const post = await Post.findOne({ unique: req.params.unique }).select('-_id -__v').populate('user', '-__v -email -password -createdAt -updatedAt').populate('tags', '-__v');
   if(!post) {
     return res.status(404).json({ success: false, data: 'Post is not availabled' });
   }
