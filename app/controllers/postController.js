@@ -17,6 +17,8 @@ exports.createPost = async (req, res) => {
   let image = req.app.locals.imgName;
   const postTags = JSON.parse(words);
 
+  console.log(req.body);
+
   const tags = postTags.map(item => {
     return item._id;
   });
@@ -42,7 +44,7 @@ exports.createPost = async (req, res) => {
     });
 
     cloudinary.uploader
-      .upload(`${CONFIG.root}/public/featured_image/${req.app.locals.imgName}`, {
+      .upload(`${CONFIG.root}/../public/featured_image/${req.app.locals.imgName}`, {
         folder: "featured_image",
         use_filename: true,
         unique_filename: false
