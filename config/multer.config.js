@@ -10,7 +10,7 @@ var featureImageStorage = multer.diskStorage({
   }
 });
 
-var featureImageUpload = multer({ storage: featureImageStorage }).single('file');
+var featureImageUpload = multer({ storage: featureImageStorage });
 
 var ProfilePictureStorage = multer.diskStorage({
   
