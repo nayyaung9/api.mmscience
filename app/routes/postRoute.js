@@ -46,5 +46,6 @@ module.exports = app => {
 
   app
     .route('/api/post/:unique')
-    .get(postController.getPostDetail);
+    .get(postController.getPostDetail)
+    .put(postController.viewerCount);
 }

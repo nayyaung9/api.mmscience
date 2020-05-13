@@ -35,8 +35,6 @@ exports.createPost = async (req, res) => {
       feature_image: image,
     });
 
-    await post.save();
-
     cloudinary.config({
       cloud_name: CONFIG.cloudinary.name,
       api_key: CONFIG.cloudinary.api_key,
@@ -50,7 +48,7 @@ exports.createPost = async (req, res) => {
         unique_filename: false
       })
       .then(function (image) {
-        console.log("* " + image);
+        console.log("* " + JSON.stringify(image));
         console.log("* " + image.url);
       })
       .catch(function (err) {
@@ -58,6 +56,7 @@ exports.createPost = async (req, res) => {
           console.warn(err);
         }
       });
+    await post.save();
     return res.status(200).json({ success: true, data: post });
   } catch (err) {
     if (err.name === "MongoError" && err.code === 11000) {
@@ -79,3 +78,8 @@ exports.getPostDetail = async (req, res) => {
   }
   return res.status(200).json({ success: true, data: post });
 };
+
+exports.viewerCount = async (req, res) => {
+  const views = await Post.findOneAndUpdate({ unique: req.params.unique }, { $inc: { views: 1 } }, {  new: true });
+  return res.status(200).json({ success: true, data: views });
+}
