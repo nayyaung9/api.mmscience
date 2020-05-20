@@ -7,8 +7,14 @@ const CONFIG = require('../../config/db');
 
 exports.register = async (req, res) => {
   let { email, password } = req.body;
-  const newUser = new User(req.body);
   try {
+    let newUser = new User({
+      email,
+      password,
+      uniqueId: Math.random()
+      .toString(36)
+      .substring(7),
+    });
     const result = await newUser.save();
     if(result) {
       var token = jwt.sign(
@@ -21,6 +27,7 @@ exports.register = async (req, res) => {
         fullname: result.fullname,
         avatar_url: result.avatar_url,
         email: result.email,
+        uniqueId: result.uniqueId,
         token: token,
       };
       console.log(credentials);
@@ -58,6 +65,7 @@ exports.login = (req, res, next) => {
           fullname: user.fullname,
           avatar_url: user.avatar_url,
           email: user.email,
+          uniqueId: user.uniqueId,
           token: token,
         };
         return res.status(200).json({ success: true, data: credentials });

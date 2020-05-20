@@ -18,6 +18,9 @@ var UserSchema = new Schema({
     type: String,
     required: true,
   },
+  uniqueId: {
+    type: String,
+  },
   role: {
     type: Schema.Types.ObjectId,
     ref: "Role"

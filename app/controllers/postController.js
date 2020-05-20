@@ -17,8 +17,6 @@ exports.createPost = async (req, res) => {
   let image = req.app.locals.imgName;
   const postTags = JSON.parse(words);
 
-  console.log(req.body);
-
   const tags = postTags.map(item => {
     return item._id;
   });

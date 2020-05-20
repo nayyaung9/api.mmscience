@@ -41,7 +41,7 @@ exports.detailTagPosts = async (req, res) => {
   await Post.find({}).populate({
     path  : 'tags',
     match : { name: { $regex: name } }
-  }).populate('user', '-_id -email -password -__v').exec((err, items) => {
+  }).populate('user', '-email -password -__v').exec((err, items) => {
     const data = items.filter(item => Object.keys(item.tags).length >= 1);
     return res.status(200).json({ success: true, data });
   });
