@@ -6,9 +6,11 @@ const bcrypt = require('bcrypt');
 const CONFIG = require('../../config/db');
 
 exports.register = async (req, res) => {
-  let { email, password } = req.body;
+  let { fullname, email, password } = req.body;
+  console.log('req', req.body);
   try {
     let newUser = new User({
+      fullname,
       email,
       password,
       uniqueId: Math.random()
@@ -43,6 +45,7 @@ exports.register = async (req, res) => {
 
 exports.login = (req, res, next) => {
   const { email, password } = req.body;
+
   User.findOne({ email }, (err, user) => {
     if(err) {
       return res.status(500).send('Error on the server' + err);

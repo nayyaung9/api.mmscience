@@ -13,6 +13,7 @@ exports.fetchAllPosts = async (req, res) => {
 };
 
 exports.createPost = async (req, res) => {
+  console.log(req.body);
   const { title, content, words, user_id } = req.body;
   let image = req.app.locals.imgName;
   const postTags = JSON.parse(words);
