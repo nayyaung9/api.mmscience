@@ -47,5 +47,6 @@ module.exports = app => {
   app
     .route('/api/post/:unique')
     .get(postController.getPostDetail)
-    .put(postController.viewerCount);
+    .put(postController.viewerCount)
+    .delete(postController.deletePost);
 }

@@ -78,6 +78,12 @@ exports.getPostDetail = async (req, res) => {
   return res.status(200).json({ success: true, data: post });
 };
 
+exports.deletePost = async (req, res) => {
+  const post = await Post.findOneAndRemove({ unique: req.params.unique });
+  if(!post) return res.send('Post cannot be delete')
+  res.send('Delete Successfully');
+};
+
 exports.viewerCount = async (req, res) => {
   const views = await Post.findOneAndUpdate({ unique: req.params.unique }, { $inc: { views: 1 } }, {  new: true });
   return res.status(200).json({ success: true, data: views });

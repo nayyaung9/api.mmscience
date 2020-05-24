@@ -9,5 +9,5 @@ module.exports = app => {
 
   app.route('/api/authenticate').post(authController.login);
 
-  app.route('/api/user/verify').get(verifyToken, authController.verify);
+  app.route('/api/user/:id/verify').get(verifyToken, authController.verify);
 };

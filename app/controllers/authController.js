@@ -31,7 +31,6 @@ exports.register = async (req, res) => {
         email: result.email,
         uniqueId: result.uniqueId,
         token: token,
-        isAuth: true,
       };
       return res.status(200).json({ success: true, data: credentials });
     }
@@ -70,7 +69,6 @@ exports.login = (req, res, next) => {
           email: user.email,
           uniqueId: user.uniqueId,
           token: token,
-          isAuth: true,
         };
         return res.status(200).json({ success: true, data: credentials });
       } else {
@@ -81,8 +79,9 @@ exports.login = (req, res, next) => {
 }
 
 exports.verify = async (req, res) => {
-  const { email } = req.credentials;
-  const user = await User.findOne({ email });
+  const { id } = req.params;
+  const user = await User.findById(id);
+  console.log('user', user);
   if(!user) res.status(404).send(false);
-  return res.status(200).send(true);
+  return res.status(200).send({ success: true, data: user });
 }
