@@ -31,8 +31,8 @@ exports.register = async (req, res) => {
         email: result.email,
         uniqueId: result.uniqueId,
         token: token,
+        isAuth: true,
       };
-      console.log(credentials);
       return res.status(200).json({ success: true, data: credentials });
     }
   } catch (err) {
@@ -70,6 +70,7 @@ exports.login = (req, res, next) => {
           email: user.email,
           uniqueId: user.uniqueId,
           token: token,
+          isAuth: true,
         };
         return res.status(200).json({ success: true, data: credentials });
       } else {

@@ -12,9 +12,9 @@ var TagSchema = new Schema({
   description: {
     type: String,
   },
-  user_id: {
+  user: {
     type: Schema.Types.ObjectId,
-    ref: 'User',
+    ref: "User"
   },
 }, {
   timestamps: true
