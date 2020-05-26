@@ -78,13 +78,55 @@ exports.getPostDetail = async (req, res) => {
   return res.status(200).json({ success: true, data: post });
 };
 
+exports.updatePost = async (req, res) => {
+  let image = req.app.locals.imgName;
+
+  cloudinary.config({
+    cloud_name: CONFIG.cloudinary.name,
+    api_key: CONFIG.cloudinary.api_key,
+    api_secret: CONFIG.cloudinary.api_secret,
+  });
+
+  cloudinary.uploader
+    .upload(`${CONFIG.root}/public/featured_image/${image}`, {
+      folder: "featured_image",
+      use_filename: true,
+      unique_filename: false
+    })
+    .then(function (image) {
+      console.log("* " + JSON.stringify(image));
+      console.log("* " + image.url);
+    })
+    .catch(function (err) {
+      if (err) {
+        console.warn(err);
+      }
+    });
+
+  await Post.findOneAndUpdate({ unique: req.body.unique }, req.body, { useFindAndModify: false })
+    .then(data => {
+      if (!data) {
+        res.status(404).send({
+          message: `Cannot update Tutorial with id=${id}. Maybe Tutorial was not found!`
+        });
+      } else res.send({ message: "Tutorial was updated successfully." });
+    })
+    .catch(err => {
+      res.status(500).send({
+        message: "Error updating Tutorial with id=" + id
+      });
+    });
+
+
+};
+
 exports.deletePost = async (req, res) => {
   const post = await Post.findOneAndRemove({ unique: req.params.unique });
-  if(!post) return res.send('Post cannot be delete')
+  if (!post) return res.send('Post cannot be delete')
   res.send('Delete Successfully');
 };
 
 exports.viewerCount = async (req, res) => {
-  const views = await Post.findOneAndUpdate({ unique: req.params.unique }, { $inc: { views: 1 } }, {  new: true });
+  const views = await Post.findOneAndUpdate({ unique: req.params.unique }, { $inc: { views: 1 } }, { new: true });
   return res.status(200).json({ success: true, data: views });
 }

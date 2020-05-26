@@ -70,6 +70,7 @@ exports.login = (req, res, next) => {
           uniqueId: user.uniqueId,
           token: token,
         };
+        console.log(credentials)
         return res.status(200).json({ success: true, data: credentials });
       } else {
         return res.status(401).send('Email or Password is incorrect');

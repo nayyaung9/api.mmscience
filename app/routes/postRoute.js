@@ -42,7 +42,16 @@ module.exports = app => {
         imgName = "IMG";
         next()
       },
-      catchError(postController.createPost));
+      catchError(postController.createPost))
+    .put(
+      verifyToken,
+      uploadStore.any(),
+      function (req, res, next) {
+        req.app.locals.imgName = imgName;
+        imgName = "IMG";
+        next()
+      },
+      catchError(postController.updatePost));
 
   app
     .route('/api/post/:unique')
