@@ -18,6 +18,9 @@ var UserSchema = new Schema({
     type: String,
     required: true,
   },
+  bio: {
+    type: String,
+  },
   uniqueId: {
     type: String,
   },

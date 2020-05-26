@@ -1,5 +1,4 @@
 const Post = require("../models/Post");
-const multer = require("multer");
 var cloudinary = require("cloudinary").v2;
 const CONFIG = require('../../config/db');
 
@@ -13,7 +12,6 @@ exports.fetchAllPosts = async (req, res) => {
 };
 
 exports.createPost = async (req, res) => {
-  console.log(req.body);
   const { title, content, words, user_id } = req.body;
   let image = req.app.locals.imgName;
   const postTags = JSON.parse(words);
@@ -23,6 +21,31 @@ exports.createPost = async (req, res) => {
   });
 
   try {
+    let imgUploading = new Promise((resolve, reject) => {
+      cloudinary.config({
+        cloud_name: CONFIG.cloudinary.name,
+        api_key: CONFIG.cloudinary.api_key,
+        api_secret: CONFIG.cloudinary.api_secret,
+      });
+      cloudinary.uploader
+        .upload(`${CONFIG.root}/public/featured_image/${image}`, {
+          folder: "featured_image",
+          use_filename: true,
+          unique_filename: false
+        })
+        .then(function (image) {
+          let imgUrl = image.secure_url;
+          return resolve(imgUrl);
+        })
+        .catch(function (err) {
+          if (err) {
+            console.warn(err);
+          }
+        });
+    })
+
+    let imgUrl = await imgUploading;
+
     let post = new Post({
       title,
       content,
@@ -31,30 +54,8 @@ exports.createPost = async (req, res) => {
         .substring(7),
       user: user_id,
       tags,
-      feature_image: image,
+      feature_image: imgUrl,
     });
-
-    cloudinary.config({
-      cloud_name: CONFIG.cloudinary.name,
-      api_key: CONFIG.cloudinary.api_key,
-      api_secret: CONFIG.cloudinary.api_secret,
-    });
-
-    cloudinary.uploader
-      .upload(`${CONFIG.root}/public/featured_image/${req.app.locals.imgName}`, {
-        folder: "featured_image",
-        use_filename: true,
-        unique_filename: false
-      })
-      .then(function (image) {
-        console.log("* " + JSON.stringify(image));
-        console.log("* " + image.url);
-      })
-      .catch(function (err) {
-        if (err) {
-          console.warn(err);
-        }
-      });
     await post.save();
     return res.status(200).json({ success: true, data: post });
   } catch (err) {

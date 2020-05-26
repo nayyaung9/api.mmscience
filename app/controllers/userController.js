@@ -3,7 +3,7 @@ const Tag = require('../models/Tag');
 
 exports.fetchUserPosts = async (req, res) => {
   const { id } = req.params;
-  const posts = await Post.find({ user: id }).populate('user').populate('tags');
+  const posts = await Post.find({ user: id }).populate('user').populate('tags').sort([["_id", -1]]);
   if(!posts) return res.status(404).send('posts not found');
   return res.status(200).json({ succes: true, data: posts });
 }
