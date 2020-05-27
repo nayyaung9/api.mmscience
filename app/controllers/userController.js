@@ -13,7 +13,9 @@ exports.fetchUserPosts = async (req, res) => {
 
 exports.fetchUserTags = async (req, res) => {
   const { id } = req.params;
+  console.log('ID', id);
   const tags = await Tag.find({ user: id }).populate('user');
+  console.log('aaa', tags);
   if (!tags) return res.status(404).send('tags not found');
   return res.status(200).json({ succes: true, data: tags });
 }
@@ -54,7 +56,6 @@ exports.updateProfile = async (req, res) => {
   })
 
   let imgUrl = await imgUploading;
-  console.log('1');
   const user = await User.findOneAndUpdate(
     { uniqueId: unique },
     { $set: { fullname: req.body.fullname, avatar_url: imgUrl } },

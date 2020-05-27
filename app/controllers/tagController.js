@@ -11,7 +11,6 @@ exports.fetchAllTags = async (req, res) => {
 exports.createTag = async (req, res) => {
   const tag = Tag.findOne({ name: req.body.name });
   if(tag) {
-    console.log('create');
     const newTag = new Tag(req.body);
     try {
       const result = await newTag.save();
@@ -24,9 +23,9 @@ exports.createTag = async (req, res) => {
     }
   } else {
     console.log('not work');
-    return res.status(403).send('Tag a;ready exist');
+    return res.status(403).send('Tag already exist');
   }
-  
+
 }
 
 exports.getTagDetail = async (req, res) => {

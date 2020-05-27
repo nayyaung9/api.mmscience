@@ -1,6 +1,6 @@
 const Post = require("../models/Post");
 var cloudinary = require("cloudinary").v2;
-const CONFIG = require('../../config/db');
+const CONFIG = require("../../config/db");
 
 exports.fetchAllPosts = async (req, res) => {
   const posts = await Post.find()
@@ -25,7 +25,7 @@ exports.createPost = async (req, res) => {
       cloudinary.config({
         cloud_name: CONFIG.cloudinary.name,
         api_key: CONFIG.cloudinary.api_key,
-        api_secret: CONFIG.cloudinary.api_secret,
+        api_secret: CONFIG.cloudinary.api_secret
       });
       cloudinary.uploader
         .upload(`${CONFIG.root}/public/featured_image/${image}`, {
@@ -33,16 +33,16 @@ exports.createPost = async (req, res) => {
           use_filename: true,
           unique_filename: false
         })
-        .then(function (image) {
+        .then(function(image) {
           let imgUrl = image.secure_url;
           return resolve(imgUrl);
         })
-        .catch(function (err) {
+        .catch(function(err) {
           if (err) {
             console.warn(err);
           }
         });
-    })
+    });
 
     let imgUrl = await imgUploading;
 
@@ -54,7 +54,7 @@ exports.createPost = async (req, res) => {
         .substring(7),
       user: user_id,
       tags,
-      feature_image: imgUrl,
+      feature_image: imgUrl
     });
     await post.save();
     return res.status(200).json({ success: true, data: post });
@@ -80,54 +80,65 @@ exports.getPostDetail = async (req, res) => {
 };
 
 exports.updatePost = async (req, res) => {
+  const { title, content, tags, user_id, unique } = req.body;
+  const words = JSON.parse(tags);
   let image = req.app.locals.imgName;
-
-  cloudinary.config({
-    cloud_name: CONFIG.cloudinary.name,
-    api_key: CONFIG.cloudinary.api_key,
-    api_secret: CONFIG.cloudinary.api_secret,
+  console.log('IMGGG', image);
+  let imgUploading = new Promise((resolve, reject) => {
+    cloudinary.config({
+      cloud_name: CONFIG.cloudinary.name,
+      api_key: CONFIG.cloudinary.api_key,
+      api_secret: CONFIG.cloudinary.api_secret
+    });
+    cloudinary.uploader
+      .upload(`${CONFIG.root}/public/featured_image/${image}`, {
+        folder: "featured_image",
+        use_filename: true,
+        unique_filename: false
+      })
+      .then(function(image) {
+        let imgUrl = image.secure_url;
+        return resolve(imgUrl);
+      })
+      .catch(function(err) {
+        if (err) {
+          console.warn(err);
+        }
+      });
   });
 
-  cloudinary.uploader
-    .upload(`${CONFIG.root}/public/featured_image/${image}`, {
-      folder: "featured_image",
-      use_filename: true,
-      unique_filename: false
-    })
-    .then(function (image) {
-      console.log("* " + JSON.stringify(image));
-      console.log("* " + image.url);
-    })
-    .catch(function (err) {
-      if (err) {
-        console.warn(err);
+  let imgUrl = await imgUploading;
+
+  const post = await Post.findOneAndUpdate(
+    { unique: req.body.unique },
+    {
+      $set: {
+        title,
+        content,
+        unique,
+        user: user_id,
+        tags: words,
+        feature_image: imgUrl
       }
-    });
+    },
+    { new: true }
+  );
+  if (!post) res.status(500).send("THere was a problem while updating Profile");
 
-  await Post.findOneAndUpdate({ unique: req.body.unique }, req.body, { useFindAndModify: false })
-    .then(data => {
-      if (!data) {
-        res.status(404).send({
-          message: `Cannot update Tutorial with id=${id}. Maybe Tutorial was not found!`
-        });
-      } else res.send({ message: "Tutorial was updated successfully." });
-    })
-    .catch(err => {
-      res.status(500).send({
-        message: "Error updating Tutorial with id=" + id
-      });
-    });
-
-
+  return res.status(200).json({ success: true, data: post });
 };
 
 exports.deletePost = async (req, res) => {
   const post = await Post.findOneAndRemove({ unique: req.params.unique });
-  if (!post) return res.send('Post cannot be delete')
-  res.send('Delete Successfully');
+  if (!post) return res.send("Post cannot be delete");
+  res.send("Delete Successfully");
 };
 
 exports.viewerCount = async (req, res) => {
-  const views = await Post.findOneAndUpdate({ unique: req.params.unique }, { $inc: { views: 1 } }, { new: true });
+  const views = await Post.findOneAndUpdate(
+    { unique: req.params.unique },
+    { $inc: { views: 1 } },
+    { new: true }
+  );
   return res.status(200).json({ success: true, data: views });
-}
+};

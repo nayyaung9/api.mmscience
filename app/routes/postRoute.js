@@ -16,6 +16,7 @@ const storage = multer.diskStorage({
       cb(null, false);
     }
     else {
+      console.log('file', file);
       var imgDateName = date.getTime();
       var fileSplit = file.originalname.split('.');
       var fileExtension = fileSplit[fileSplit.length - 1];
