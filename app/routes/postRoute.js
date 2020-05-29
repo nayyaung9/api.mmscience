@@ -59,4 +59,17 @@ module.exports = app => {
     .get(postController.getPostDetail)
     .put(postController.viewerCount)
     .delete(postController.deletePost);
+
+  app
+    .route('/api/featured_image/upload')
+    .post(
+      verifyToken,
+      uploadStore.any(),
+      function (req, res, next) {
+        req.app.locals.imgName = imgName;
+        imgName = "IMG";
+        next()
+      },
+      catchError(postController.featureImgUpload)
+    )
 }

@@ -83,7 +83,7 @@ exports.updatePost = async (req, res) => {
   const { title, content, tags, user_id, unique } = req.body;
   const words = JSON.parse(tags);
   let image = req.app.locals.imgName;
-  console.log('IMGGG', image);
+  console.log("IMGGG", image);
   let imgUploading = new Promise((resolve, reject) => {
     cloudinary.config({
       cloud_name: CONFIG.cloudinary.name,
@@ -126,6 +126,29 @@ exports.updatePost = async (req, res) => {
   if (!post) res.status(500).send("THere was a problem while updating Profile");
 
   return res.status(200).json({ success: true, data: post });
+};
+
+exports.featureImgUpload = async (req, res) => {
+  let image = req.app.locals.imgName;
+  cloudinary.config({
+    cloud_name: CONFIG.cloudinary.name,
+    api_key: CONFIG.cloudinary.api_key,
+    api_secret: CONFIG.cloudinary.api_secret
+  });
+  cloudinary.uploader
+    .upload(`${CONFIG.root}/public/featured_image/${image}`, {
+      folder: "featured_image",
+      use_filename: true,
+      unique_filename: false
+    })
+    .then(function(image) {
+      return res.status(200).send(image);
+    })
+    .catch(function(err) {
+      if (err) {
+        console.warn(err);
+      }
+    });
 };
 
 exports.deletePost = async (req, res) => {

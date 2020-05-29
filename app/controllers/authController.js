@@ -7,7 +7,6 @@ const CONFIG = require('../../config/db');
 
 exports.register = async (req, res) => {
   let { fullname, email, password } = req.body;
-  console.log('req', req.body);
   try {
     let newUser = new User({
       fullname,
@@ -47,10 +46,10 @@ exports.login = (req, res, next) => {
 
   User.findOne({ email }, (err, user) => {
     if(err) {
-      return res.status(500).send('Error on the server' + err);
+      return res.status(500).send('There was an error while login. Please try again');
     }
     if (!user) {
-      return res.status(404).send('User not found');
+      return res.status(404).send('User does not exist');
     }
     bcrypt.compare(password, user.password, function(err, result) {
       if (err) {
