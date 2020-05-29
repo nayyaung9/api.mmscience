@@ -39,7 +39,7 @@ exports.updateProfile = async (req, res) => {
       api_secret: CONFIG.cloudinary.api_secret,
     });
     cloudinary.uploader
-      .upload(`${CONFIG.root}/public/profile/${image}`, {
+      .upload(`../${CONFIG.root}/public/profile/${image}`, {
         folder: "profile",
         use_filename: true,
         unique_filename: false
