@@ -15,6 +15,7 @@ exports.register = async (req, res) => {
       uniqueId: Math.random()
       .toString(36)
       .substring(7),
+      avatar_url: 'https://res.cloudinary.com/dcx5aeaaz/image/upload/v1590746247/profile/mmscience_default_profile_sw55hn.png',
     });
     const result = await newUser.save();
     if(result) {
