@@ -50,7 +50,7 @@ exports.createQuiz = async (req, res) => {
           api_secret: CONFIG.cloudinary.api_secret
         });
         cloudinary.uploader
-          .upload(`${CONFIG.root}/public/quiz/${req.app.locals.imgName}`, {
+          .upload(`../${CONFIG.root}/public/quiz/${req.app.locals.imgName}`, {
             folder: "quiz",
             use_filename: true,
             unique_filename: false
