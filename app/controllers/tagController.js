@@ -48,6 +48,7 @@ exports.detailTagPosts = async (req, res) => {
 
 exports.deleteTag = async (req, res) => {
   const { id } = req.params;
+  console.log('ID'. id);
   return await Tag.findByIdAndRemove(id, (err) => {
     if(err) return res.send('Tag cannot be delete')
     res.send('Delete Successfully');

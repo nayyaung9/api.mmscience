@@ -38,7 +38,7 @@ module.exports = app => {
     .get(verifyToken, catchError(userController.fetchUserPosts));
   app
     .route('/api/user/:id/tags')
-    .get(catchError(userController.fetchUserTags));
+    .get(verifyToken, catchError(userController.fetchUserTags));
   app
     .route('/api/user/:unique')
     .get(verifyToken, catchError(userController.fetchUserProfile));

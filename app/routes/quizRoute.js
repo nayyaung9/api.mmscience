@@ -1,23 +1,23 @@
-var QuizController = require('../controllers/quizController');
-const verifyToken = require('../libs/verifyToken');
-const { catchError } = require('../libs/errorHandler');
-const multer = require('multer');
+var QuizController = require("../controllers/quizController");
+const verifyToken = require("../libs/verifyToken");
+const { catchError } = require("../libs/errorHandler");
+const multer = require("multer");
 
 var imgName = "IMG";
 var date = new Date();
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, 'public/quiz');
+    cb(null, "public/quiz");
   },
   filename: (req, file, cb) => {
     if (!file) {
       cb(null, false);
-    }
-    else {
+    } else {
       var imgDateName = date.getTime();
-      var fileSplit = file.originalname.split('.');
+      var fileSplit = file.originalname.split(".");
       var fileExtension = fileSplit[fileSplit.length - 1];
-      imgName = imgName + "-" + imgDateName + '-mmscience' + '.' + fileExtension;
+      imgName =
+        imgName + "-" + imgDateName + "-mmscience" + "." + fileExtension;
       cb(null, imgName);
     }
   }
@@ -27,18 +27,21 @@ const uploadStore = multer({
   storage
 });
 
-
 module.exports = app => {
   app
-    .route('/api/quiz')
+    .route("/api/quiz")
     .get(verifyToken, catchError(QuizController.fetchAllQuiz))
     .post(
-      verifyToken, 
+      verifyToken,
       uploadStore.any(),
-      function (req, res, next) {
+      function(req, res, next) {
         req.app.locals.imgName = imgName;
         imgName = "IMG";
-        next()
+        next();
       },
-      catchError(QuizController.createQuiz));
+      catchError(QuizController.createQuiz)
+    );
+  app
+    .route("/api/quiz/:unique")
+    .get(verifyToken, catchError(QuizController.fetchQuizDetail));
 };
