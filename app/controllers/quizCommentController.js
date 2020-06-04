@@ -34,3 +34,17 @@ exports.createQuizComment = async (req, res) => {
     return res.status(500).send(err.message);
   }
 };
+
+exports.editQuizComment = async (req, res) => {
+  const { commentId } = req.params;
+  const quizComment = await QuizComment.findOne({ unique: commentId });
+  if(!quizComment) return res.status(404).send('Comment not found');
+  return res.status(200).json({ success: true, data: quizComment });
+}
+
+exports.deleteQuizComment = async (req, res) => {
+  const { quizId } = req.params;
+  const quizComment = await QuizComment.findOneAndRemove({ unique: quizId })
+  if (!quizComment) return res.send("Comment cannot be delete");
+  res.send("Delete Successfully");
+}

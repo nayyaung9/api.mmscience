@@ -53,4 +53,10 @@ module.exports = app => {
   app
     .route('/api/quiz/comment')
     .post(verifyToken, catchError(QuizCommentController.createQuizComment));
+  app
+    .route('/api/quiz/:quizId/comment/delete')
+    .delete(verifyToken, catchError(QuizCommentController.deleteQuizComment));
+  app
+    .route('/api/quiz/comment/:commentId/edit')
+    .get(verifyToken, catchError(QuizCommentController.editQuizComment));
 };
