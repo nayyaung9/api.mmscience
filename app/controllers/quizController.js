@@ -12,7 +12,7 @@ exports.fetchAllQuiz = async (req, res) => {
 };
 
 exports.createQuiz = async (req, res) => {
-  const { title, description, words, user_id } = req.body;
+  const { title, description, words, level, user_id } = req.body;
   let image = req.app.locals.imgName;
   const postTags = JSON.parse(words);
 
@@ -30,6 +30,7 @@ exports.createQuiz = async (req, res) => {
           .substring(7),
         user: user_id,
         tags,
+        level,
         feature_image: null
       });
       await quiz.save();
@@ -50,7 +51,7 @@ exports.createQuiz = async (req, res) => {
           api_secret: CONFIG.cloudinary.api_secret
         });
         cloudinary.uploader
-          .upload(`../${CONFIG.root}/public/quiz/${req.app.locals.imgName}`, {
+          .upload(`${CONFIG.root}/public/quiz/${req.app.locals.imgName}`, {
             folder: "quiz",
             use_filename: true,
             unique_filename: false
@@ -66,7 +67,6 @@ exports.createQuiz = async (req, res) => {
           });
       });
       let imgUrl = await imgUploading;
-      console.log('here', imgUrl);
       let quiz = new Quiz({
         title,
         description,
@@ -75,6 +75,7 @@ exports.createQuiz = async (req, res) => {
           .substring(7),
         user: user_id,
         tags,
+        level,
         feature_image: imgUrl
       });
 
@@ -91,7 +92,7 @@ exports.createQuiz = async (req, res) => {
 
 exports.fetchQuizDetail = async (req, res) => {
   const quiz = await Quiz.findOne({ unique: req.params.unique })
-    .select("-_id -__v")
+    .select("-__v")
     .populate("user", "-__v -email -password -createdAt -updatedAt")
     .populate("tags", "-__v");
   if (!quiz) {

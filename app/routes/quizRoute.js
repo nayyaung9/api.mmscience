@@ -1,4 +1,5 @@
 var QuizController = require("../controllers/quizController");
+var QuizCommentController = require('../controllers/quizCommentController');
 const verifyToken = require("../libs/verifyToken");
 const { catchError } = require("../libs/errorHandler");
 const multer = require("multer");
@@ -43,5 +44,13 @@ module.exports = app => {
     );
   app
     .route("/api/quiz/:unique")
-    .get(verifyToken, catchError(QuizController.fetchQuizDetail));
+    .get(catchError(QuizController.fetchQuizDetail));
+
+  // quiz comments
+  app
+    .route('/api/quiz/:quizId/comments')
+    .get(catchError(QuizCommentController.fetchQuizCommentsByQuizId));
+  app
+    .route('/api/quiz/comment')
+    .post(verifyToken, catchError(QuizCommentController.createQuizComment));
 };

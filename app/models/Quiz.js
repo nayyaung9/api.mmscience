@@ -12,6 +12,9 @@ var QuizSchema = new Schema({
   unique: {
     type: String,
   },
+  level: {
+    type: String,
+  },
   user: {
     type: Schema.Types.ObjectId,
     ref: "User"
