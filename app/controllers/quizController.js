@@ -102,3 +102,12 @@ exports.fetchQuizDetail = async (req, res) => {
   }
   return res.status(200).json({ success: true, data: quiz });
 };
+
+exports.quizViewerCount = async (req, res) => {
+  const views = await Quiz.findOneAndUpdate(
+    { unique: req.params.unique },
+    { $inc: { views: 1 } },
+    { new: true }
+  );
+  return res.status(200).json({ success: true, data: views });
+};

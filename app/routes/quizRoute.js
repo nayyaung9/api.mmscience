@@ -44,7 +44,8 @@ module.exports = app => {
     );
   app
     .route("/api/quiz/:unique")
-    .get(catchError(QuizController.fetchQuizDetail));
+    .get(catchError(QuizController.fetchQuizDetail))
+    .put(catchError(QuizController.quizViewerCount));
 
   // quiz comments
   app

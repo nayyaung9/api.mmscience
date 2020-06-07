@@ -28,9 +28,12 @@ var QuizSchema = new Schema({
   feature_image: {
     type: String,
   },
+  views: {
+    type: Number,
+    default: 0
+  },
 }, {
   timestamps: true
 });
 
 module.exports = mongoose.model('Quiz', QuizSchema);
-

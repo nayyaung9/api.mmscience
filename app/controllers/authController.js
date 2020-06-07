@@ -70,7 +70,6 @@ exports.login = (req, res, next) => {
           uniqueId: user.uniqueId,
           token: token,
         };
-        console.log(credentials)
         return res.status(200).json({ success: true, data: credentials });
       } else {
         return res.status(401).send('Email or Password is incorrect');
@@ -82,7 +81,6 @@ exports.login = (req, res, next) => {
 exports.verify = async (req, res) => {
   const { id } = req.params;
   const user = await User.findById(id);
-  console.log('user', user);
   if(!user) res.status(404).send(false);
   return res.status(200).send({ success: true, data: user });
 }
