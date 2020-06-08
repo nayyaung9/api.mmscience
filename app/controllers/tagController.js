@@ -43,7 +43,7 @@ exports.detailTagPosts = async (req, res) => {
       path: "tags",
       match: { name: { $regex: name } }
     })
-    .populate("user_id", "-email -password -__v")
+    .populate("user", "-email -password -__v")
 
     .exec((err, items) => {
       const data = items.filter(item => Object.keys(item.tags).length >= 1);
