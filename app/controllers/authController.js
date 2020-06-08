@@ -16,6 +16,7 @@ exports.register = async (req, res) => {
       .toString(36)
       .substring(7),
       avatar_url: 'https://res.cloudinary.com/dcx5aeaaz/image/upload/v1590746247/profile/mmscience_default_profile_sw55hn.png',
+      bio: '',
     });
     const result = await newUser.save();
     if(result) {
@@ -27,6 +28,7 @@ exports.register = async (req, res) => {
       const credentials = {
         id: result._id,
         fullname: result.fullname,
+        bio: result.bio,
         avatar_url: result.avatar_url,
         email: result.email,
         uniqueId: result.uniqueId,
@@ -66,6 +68,7 @@ exports.login = (req, res, next) => {
           id: user._id,
           fullname: user.fullname,
           avatar_url: user.avatar_url,
+          bio: user.bio,
           email: user.email,
           uniqueId: user.uniqueId,
           token: token,
