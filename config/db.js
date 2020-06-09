@@ -19,9 +19,9 @@ const config = {
       api_secret: process.env.cloudinarySecret,
     },
     gmailAuth: {
-      user: 'noreply.mmscience@gmail.com',
+      user: 'nayyaung.developer@gmail.com',
       name: '"MM SCIENCE"',
-      pass: 'mmscience!@#',
+      pass: 'nyll20112001',
     },
   },
   production: {
