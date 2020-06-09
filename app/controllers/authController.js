@@ -150,7 +150,7 @@ const newUserEmailTmpl = ({ fullname, email, password }) => {
 const accountVerifyTmpl = ({ fullname, uniId, email }) => {
   let mailBody = `
     Your account need to be verify.Please click following link<br/>
-    <a href="http://localhost:3000/user/${uniId}/account/confirmation">verify account</a>
+    <a href="http://mmscience.netlify.app/user/${uniId}/account/confirmation">verify account</a>
   `;
   return mailBody;
 }
