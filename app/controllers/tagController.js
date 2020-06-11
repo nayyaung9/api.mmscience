@@ -2,10 +2,18 @@
 
 const Tag = require("../models/Tag");
 const Post = require("../models/Post");
+const User = require("../models/User");
 
 exports.fetchAllTags = async (req, res) => {
   const tags = await Tag.find()
-    .populate("user_id", "-_id -email -password -createdAt -updatedAt -__v")
+    .populate(
+      "user",
+      "-_id -email -password -following -isVerified -followers -createdAt -updatedAt -__v"
+    )
+    .populate(
+      "following.users",
+      "-email -password -following -isVerified -followers -createdAt -updatedAt -__v"
+    )
     .select("-__v");
   return res.status(200).json({ succes: true, data: tags });
 };
@@ -31,7 +39,12 @@ exports.createTag = async (req, res) => {
 
 exports.getTagDetail = async (req, res) => {
   const { name } = req.params;
-  const tag = await Tag.findOne({ name });
+  const tag = await Tag.findOne({ name })
+    .populate(
+      "following.users",
+      "-email -password -following -isVerified -followers -createdAt -updatedAt -__v"
+    )
+    .select("-__v");
   if (!tag) return res.status(404).send("Tag not found");
   return res.status(200).json({ succes: true, data: tag });
 };
@@ -43,8 +56,6 @@ exports.detailTagPosts = async (req, res) => {
       path: "tags",
       match: { name: { $regex: name } }
     })
-    .populate("user", "-email -password -__v")
-
     .exec((err, items) => {
       const data = items.filter(item => Object.keys(item.tags).length >= 1);
       return res.status(200).json({ success: true, data });
@@ -62,8 +73,28 @@ exports.deleteTag = async (req, res) => {
 
 exports.followTags = async (req, res) => {
   await Tag.findById(req.body.tagId).then(tag => {
-    return tag.follow(req.body.id).then(() => {
+    return tag.follow(req.body.id).then(async () => {
+      const user = await User.findById(req.body.id);
+      if (!user) return res.status(404).send("User not found");
+      if (user) {
+        user.following.tags.unshift(req.body.tagId);
+        user.save();
+      }
       return res.json({ msg: "followed" });
     });
   });
 };
+
+exports.unFollowTag = async (req, res) => {
+  await Tag.findById(req.body.tagId).then(tag => {
+    return tag.unfollow(req.body.id).then(async () => {
+      const user = await User.findById(req.body.id);
+      if (!user) return res.status(404).send("User not found");
+      if (user) {
+        user.following.tags.shift(req.body.tagId);
+        user.save();
+      }
+      return res.json({ msg: "unfollowed" });
+    });
+  });
+}

@@ -17,18 +17,14 @@ var TagSchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: "User"
     },
-    followers: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: "User"
-      }
-    ],
-    following: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: "User"
-      }
-    ]
+    following: {
+      users: [
+        {
+          type: Schema.Types.ObjectId,
+          ref: "User"
+        }
+      ]
+    }
   },
   {
     timestamps: true
@@ -36,8 +32,18 @@ var TagSchema = new Schema(
 );
 
 TagSchema.methods.follow = function(userId) {
-  if (this.following.indexOf(userId) === -1) {
-    this.following.push(userId);
+  if (this.following.users.indexOf(userId) === -1) {
+    this.following.users.push(userId);
+  }
+  return this.save();
+};
+
+TagSchema.methods.unfollow = function(userId) {
+  console.log('un', this.following.users.toString().indexOf(userId));
+  if (this.following.users.toString().indexOf(userId) !== -1) {
+        console.log(this.following.users);
+    this.following.users.shift(userId);
+
   }
   return this.save();
 };

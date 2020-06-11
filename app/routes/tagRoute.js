@@ -18,6 +18,9 @@ module.exports = app => {
   app
     .route("/api/tag/follow")
     .post(verifyToken, catchError(tagController.followTags));
+  app
+    .route("/api/tag/unfollow")
+    .post(verifyToken, catchError(tagController.unFollowTag));
 
   // this route is to fetch posts that belongs to :name tag
   app

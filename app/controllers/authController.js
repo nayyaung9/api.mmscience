@@ -87,6 +87,7 @@ exports.login = (req, res, next) => {
           CONFIG.jwtSecret,
           { expiresIn: "1h" }
         );
+        console.log(user);
         const credentials = {
           id: user._id,
           fullname: user.fullname,
@@ -95,6 +96,7 @@ exports.login = (req, res, next) => {
           email: user.email,
           uniqueId: user.uniqueId,
           isVerified: user.isVerified,
+          following: user.following,
           token: token
         };
         const uniId = user.uniqueId;
@@ -119,7 +121,7 @@ exports.login = (req, res, next) => {
 
 exports.verify = async (req, res) => {
   const { id } = req.params;
-  const user = await User.findById(id);
+  const user = await User.findById(id).populate('following.tags', '-followers -following');
   if (!user) res.status(404).send(false);
   return res.status(200).send({ success: true, data: user });
 };
