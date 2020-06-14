@@ -33,6 +33,9 @@ const uploadStore = multer({
 
 module.exports = app => {
   app
+    .route('/api/feed/:unique')
+    .get(verifyToken, catchError(postController.getUserNewfeed));
+  app
     .route('/api/posts')
     .get(verifyToken, catchError(postController.fetchAllPosts))
     .post(

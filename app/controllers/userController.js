@@ -10,15 +10,14 @@ exports.fetchUserPosts = async (req, res) => {
     .populate("user")
     .populate("tags")
     .sort([["_id", -1]]);
+  console.log(posts);
   if (!posts) return res.status(404).send("posts not found");
   return res.status(200).json({ succes: true, data: posts });
 };
 
 exports.fetchUserTags = async (req, res) => {
   const { id } = req.params;
-  console.log("ID", id);
   const tags = await Tag.find({ user: id }).populate("user");
-  console.log("aaa", tags);
   if (!tags) return res.status(404).send("tags not found");
   return res.status(200).json({ succes: true, data: tags });
 };
@@ -61,7 +60,7 @@ exports.updateProfile = async (req, res) => {
         api_secret: CONFIG.cloudinary.api_secret
       });
       cloudinary.uploader
-        .upload(`../${CONFIG.root}/public/profile/${image}`, {
+        .upload(`${CONFIG.root}/public/profile/${image}`, {
           folder: "profile",
           use_filename: true,
           unique_filename: false

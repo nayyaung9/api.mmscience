@@ -1,6 +1,7 @@
 "use strict";
 
 const tagController = require("../controllers/tagController");
+const followedTagController = require("../controllers/followedTagController");
 const verifyToken = require("../libs/verifyToken");
 const { catchError } = require("../libs/errorHandler");
 
@@ -17,10 +18,13 @@ module.exports = app => {
 
   app
     .route("/api/tag/follow")
-    .post(verifyToken, catchError(tagController.followTags));
+    .post(verifyToken, catchError(followedTagController.followTags));
   app
     .route("/api/tag/unfollow")
-    .post(verifyToken, catchError(tagController.unFollowTag));
+    .post(verifyToken, catchError(followedTagController.unFollowTag));
+  app
+    .route("/api/tag/:tagId/followers")
+    .get(catchError(followedTagController.fetchTagFollowedUsers));
 
   // this route is to fetch posts that belongs to :name tag
   app

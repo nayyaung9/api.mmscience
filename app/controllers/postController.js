@@ -1,11 +1,43 @@
 const Post = require("../models/Post");
+const User = require("../models/User");
+const Tag = require("../models/Tag");
+var FollowableTag = require("../models/FollowableTag");
+var mongoose = require("mongoose");
 var cloudinary = require("cloudinary").v2;
 const CONFIG = require("../../config/db");
+
+exports.getUserNewfeed = async (req, res) => {
+  const { unique } = req.params;
+  const getUserFollowedtags = await FollowableTag.find({
+    _user: unique
+  }).populate("_tags");
+
+  const posts = await Post.find({
+    tags: {
+      $in: getUserFollowedtags.map(function(o) {
+        return mongoose.Types.ObjectId(o._tags._id);
+      })
+    }
+  })
+    .populate(
+      "user",
+      "-following -isVerified -_id -password -followers -createdAt -updatedAt  -__v"
+    )
+    .populate("tags", "-__v")
+    .sort([["_id", -1]]);
+
+  if(!posts) return res.status(404).json({ succes: false, data: 'Please follow Tags'})
+
+  return res.status(200).json({ succes: true, data: posts });
+};
 
 exports.fetchAllPosts = async (req, res) => {
   const posts = await Post.find()
     .select("-_id -__v")
-    .populate("user", "-__v")
+    .populate(
+      "user",
+      "-following -isVerified -_id -password -followers -createdAt -updatedAt  -__v"
+    )
     .populate("tags", "-__v")
     .sort([["_id", -1]]);
   return res.status(200).json({ success: true, data: posts });
@@ -28,16 +60,16 @@ exports.createPost = async (req, res) => {
         api_secret: CONFIG.cloudinary.api_secret
       });
       cloudinary.uploader
-        .upload(`../${CONFIG.root}/public/featured_image/${image}`, {
+        .upload(`${CONFIG.root}/public/featured_image/${image}`, {
           folder: "featured_image",
           use_filename: true,
           unique_filename: false
         })
-        .then(function (image) {
+        .then(function(image) {
           let imgUrl = image.secure_url;
           return resolve(imgUrl);
         })
-        .catch(function (err) {
+        .catch(function(err) {
           if (err) {
             console.warn(err);
           }
@@ -85,7 +117,7 @@ exports.updatePost = async (req, res) => {
   let image = req.app.locals.imgName;
   image == "IMG" ? "-" : image || "-";
 
-  if (image === 'IMG') {
+  if (image === "IMG") {
     const post = await Post.findOneAndUpdate(
       { unique: req.body.unique },
       {
@@ -95,12 +127,13 @@ exports.updatePost = async (req, res) => {
           unique,
           user: user_id,
           tags: words,
-          feature_image: photo,
+          feature_image: photo
         }
       },
       { new: true }
     );
-    if (!post) res.status(500).send("THere was a problem while updating Profile");
+    if (!post)
+      res.status(500).send("THere was a problem while updating Profile");
 
     return res.status(200).json({ success: true, data: post });
   } else {
@@ -116,11 +149,11 @@ exports.updatePost = async (req, res) => {
           use_filename: true,
           unique_filename: false
         })
-        .then(function (image) {
+        .then(function(image) {
           let imgUrl = image.secure_url;
           return resolve(imgUrl);
         })
-        .catch(function (err) {
+        .catch(function(err) {
           if (err) {
             console.warn(err);
           }
@@ -138,16 +171,16 @@ exports.updatePost = async (req, res) => {
           unique,
           user: user_id,
           tags: words,
-          feature_image: imgUrl,
+          feature_image: imgUrl
         }
       },
       { new: true }
     );
-    if (!post) res.status(500).send("THere was a problem while updating Profile");
+    if (!post)
+      res.status(500).send("THere was a problem while updating Profile");
 
     return res.status(200).json({ success: true, data: post });
   }
-
 };
 
 exports.featureImgUpload = async (req, res) => {
@@ -163,10 +196,10 @@ exports.featureImgUpload = async (req, res) => {
       use_filename: true,
       unique_filename: false
     })
-    .then(function (image) {
+    .then(function(image) {
       return res.status(200).send(image);
     })
-    .catch(function (err) {
+    .catch(function(err) {
       if (err) {
         console.warn(err);
       }

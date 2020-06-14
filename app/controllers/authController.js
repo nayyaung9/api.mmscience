@@ -102,15 +102,6 @@ exports.login = (req, res, next) => {
         const uniId = user.uniqueId;
         const fullname = user.fullname;
 
-        let accVerifyMail = {
-          fullname: fullname,
-          uniqueId: uniId,
-          to: email,
-          subject: "Please Verify your mmscience account",
-          html: accountVerifyTmpl({ fullname, uniId, email })
-        }
-
-        mailer(accVerifyMail);
         return res.status(200).json({ success: true, data: credentials });
       } else {
         return res.status(401).send("Email or Password is incorrect");
