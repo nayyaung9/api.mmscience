@@ -21,7 +21,7 @@ exports.getUserNewfeed = async (req, res) => {
   })
     .populate(
       "user",
-      "-following -isVerified -_id -password -followers -createdAt -updatedAt  -__v"
+      "-following -isVerified -password -followers -createdAt -updatedAt  -__v"
     )
     .populate("tags", "-__v")
     .sort([["_id", -1]]);
