@@ -17,6 +17,10 @@ module.exports = app => {
     .get(verifyToken, catchError(tagController.getTagDetail));
 
   app
+    .route("/api/tag/:tagId")
+    .put(verifyToken, catchError(tagController.updateTagDetail));
+
+  app
     .route("/api/tag/follow")
     .post(verifyToken, catchError(followedTagController.followTags));
   app

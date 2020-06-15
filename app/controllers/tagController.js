@@ -37,7 +37,7 @@ exports.getTagDetail = async (req, res) => {
   const { name } = req.params;
   const tag = await Tag.findOne({ name })
     .populate(
-      "user",
+      "tagCreator",
       "-email -password -following -isVerified -followers -createdAt -updatedAt -__v"
     )
     .select("-__v");
@@ -61,6 +61,27 @@ exports.detailTagPosts = async (req, res) => {
       return res.status(200).json({ success: true, data });
     });
 };
+
+exports.updateTagDetail = async (req, res) => {
+  const { tagId } = req.params;
+  const { name, description } = req.body;
+  console.log(name, description, tagId)
+  const tag = await Tag.findOneAndUpdate(
+    { _id: tagId },
+    {
+      $set: {
+        name,
+        description,
+      }
+    },
+    { new: true }
+  );
+  if(!tag) {
+    return res.status(500).send('tag not found');
+  }
+
+  return res.status(200).json(tag);
+}
 
 exports.deleteTag = async (req, res) => {
   const { id } = req.params;

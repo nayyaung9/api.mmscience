@@ -26,7 +26,8 @@ exports.getUserNewfeed = async (req, res) => {
     .populate("tags", "-__v")
     .sort([["_id", -1]]);
 
-  if(!posts) return res.status(404).json({ succes: false, data: 'Please follow Tags'})
+  if (!posts)
+    return res.status(404).json({ succes: false, data: "Please follow Tags" });
 
   return res.status(200).json({ succes: true, data: posts });
 };
@@ -78,18 +79,22 @@ exports.createPost = async (req, res) => {
 
     let imgUrl = await imgUploading;
 
-    let post = new Post({
-      title,
-      content,
-      unique: Math.random()
-        .toString(36)
-        .substring(7),
-      user: user_id,
-      tags,
-      feature_image: imgUrl
-    });
-    await post.save();
-    return res.status(200).json({ success: true, data: post });
+    if (imgUrl) {
+      let post = new Post({
+        title,
+        content,
+        unique: Math.random()
+          .toString(36)
+          .substring(7),
+        user: user_id,
+        tags,
+        feature_image: imgUrl
+      });
+      await post.save();
+      return res.status(200).json({ success: true, data: post });
+    } else {
+      return res.status(500).send("Please try again");
+    }
   } catch (err) {
     if (err.name === "MongoError" && err.code === 11000) {
       return res.status(500).send("There is a problem while creating a post");

@@ -13,6 +13,10 @@ var TagSchema = new Schema(
     description: {
       type: String
     },
+    tagCreator: {
+      type: Schema.Types.ObjectId,
+      ref: 'User',
+    },
     _user: [
       {
         type: Schema.Types.ObjectId,

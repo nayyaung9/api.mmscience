@@ -17,7 +17,7 @@ exports.fetchUserPosts = async (req, res) => {
 
 exports.fetchUserTags = async (req, res) => {
   const { id } = req.params;
-  const tags = await Tag.find({ user: id }).populate("user");
+  const tags = await Tag.find({ tagCreator: id }).populate("user");
   if (!tags) return res.status(404).send("tags not found");
   return res.status(200).json({ succes: true, data: tags });
 };
