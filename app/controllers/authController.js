@@ -25,7 +25,7 @@ exports.register = async (req, res) => {
       var token = jwt.sign(
         { credentials: `${result._id}.${CONFIG.jwtSecret}.${result.email}` },
         CONFIG.jwtSecret,
-        { expiresIn: "1h" }
+        {}
       );
       const credentials = {
         id: result._id,
@@ -85,9 +85,8 @@ exports.login = (req, res, next) => {
         var token = jwt.sign(
           { credentials: `${user._id}.${CONFIG.jwtSecret}.${user.email}` },
           CONFIG.jwtSecret,
-          { expiresIn: "1h" }
+          {}
         );
-        console.log(user);
         const credentials = {
           id: user._id,
           fullname: user.fullname,

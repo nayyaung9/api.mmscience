@@ -41,7 +41,7 @@ server.listen(PORT, () => {
 
 io.on('connection', function(socket) {
   console.log('Socket is up and running now.');
-  socket.on('channel1', function(message) {
+  socket.on('event://send-fact', function(message) {
     console.log('Message from client : ' + message);
   });
   socket.emit('channel2', 'I send u bro');

@@ -1,7 +1,6 @@
 const Post = require("../models/Post");
-const User = require("../models/User");
-const Tag = require("../models/Tag");
 var FollowableTag = require("../models/FollowableTag");
+var NotiController = require("./notiController");
 var mongoose = require("mongoose");
 var cloudinary = require("cloudinary").v2;
 const CONFIG = require("../../config/db");
@@ -78,19 +77,27 @@ exports.createPost = async (req, res) => {
     });
 
     let imgUrl = await imgUploading;
-
+    const factUniqueId = Math.random()
+      .toString(36)
+      .substring(7);
     if (imgUrl) {
       let post = new Post({
         title,
         content,
-        unique: Math.random()
-          .toString(36)
-          .substring(7),
+        unique: factUniqueId,
         user: user_id,
         tags,
         feature_image: imgUrl
       });
       await post.save();
+      let data = {
+        sourceType: "FACT",
+        sourceId: factUniqueId,
+        notiTargetRole: "ALL",
+        message: "made a new post",
+        sourceUser: user_id
+      };
+      NotiController.createNewNotification(req.io, data);
       return res.status(200).json({ success: true, data: post });
     } else {
       return res.status(500).send("Please try again");
@@ -196,7 +203,7 @@ exports.featureImgUpload = async (req, res) => {
     api_secret: CONFIG.cloudinary.api_secret
   });
   cloudinary.uploader
-    .upload(`../${CONFIG.root}/public/featured_image/${image}`, {
+    .upload(`${CONFIG.root}/public/featured_image/${image}`, {
       folder: "featured_image",
       use_filename: true,
       unique_filename: false
