@@ -1,4 +1,5 @@
 const Post = require("../models/Post");
+const Notification = require("../models/Notification");
 var FollowableTag = require("../models/FollowableTag");
 var NotiController = require("./notiController");
 var mongoose = require("mongoose");
@@ -91,13 +92,14 @@ exports.createPost = async (req, res) => {
       });
       await post.save();
       let data = {
-        sourceType: "FACT",
-        sourceId: factUniqueId,
+        onModel: "Post",
+        sourceId: post._id,
         notiTargetRole: "ALL",
-        message: "made a new post",
+        specificSourceId: factUniqueId,
+        message: "made a new fact",
         sourceUser: user_id
       };
-      NotiController.createNewNotification(req.io, data);
+      await NotiController.createNewNotification(req.io, data);
       return res.status(200).json({ success: true, data: post });
     } else {
       return res.status(500).send("Please try again");
@@ -220,6 +222,9 @@ exports.featureImgUpload = async (req, res) => {
 
 exports.deletePost = async (req, res) => {
   const post = await Post.findOneAndRemove({ unique: req.params.unique });
+  const deleteNotification = await Notification.findOneAndRemove({
+    specificSourceId: req.params.unique
+  });
   if (!post) return res.send("Post cannot be delete");
   res.send("Delete Successfully");
 };
