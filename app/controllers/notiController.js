@@ -8,17 +8,10 @@ exports.getAllNotifications = async (req, res) => {
       "sourceUser",
       "-_id -email -password -createdAt -isVerified -followers -following -updatedAt -__v"
     )
-    .populate({
-      path: "sourceId",
-      select: "-_id -content -user -createdAt -updatedAt",
-      populate: {
-        path: "tags",
-        select: "-_user -_id -description -createdAt -updatedAt"
-      }
-    })
+
+    .populate("sourceId")
     .sort([["_id", -1]]);
 
-  console.log(notifications);
   if (notifications)
     return res.status(200).json({ success: true, data: notifications });
 };

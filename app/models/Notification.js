@@ -11,7 +11,6 @@ var NotificationSchema = new Schema(
     onModel: {
       type: String,
       required: true,
-      enum: ["Post", "QUIZ", "DISCUSS"]
     },
     notiTargetRole: [
       {

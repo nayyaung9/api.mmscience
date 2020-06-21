@@ -3,6 +3,7 @@
 const Tag = require("../models/Tag");
 const Post = require("../models/Post");
 const User = require("../models/User");
+var NotiController = require("./notiController");
 
 exports.fetchAllTags = async (req, res) => {
   const tags = await Tag.find()
@@ -20,6 +21,15 @@ exports.createTag = async (req, res) => {
     const newTag = new Tag(req.body);
     try {
       const result = await newTag.save();
+      let data = {
+        onModel: "Tag",
+        sourceId: result._id,
+        notiTargetRole: "ALL",
+        specificSourceId: req.body.name,
+        message: "create a new topic",
+        sourceUser: result.tagCreator,
+      };
+      await NotiController.createNewNotification(req.io, data);
       return res.status(200).json({ succes: true, data: result });
     } catch (err) {
       if (err.name === "MongoError" && err.code === 11000) {
@@ -28,7 +38,6 @@ exports.createTag = async (req, res) => {
       return res.status(500).send(err.message);
     }
   } else {
-    console.log("not work");
     return res.status(403).send("Tag already exist");
   }
 };
