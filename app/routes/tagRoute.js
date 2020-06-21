@@ -8,7 +8,7 @@ const { catchError } = require("../libs/errorHandler");
 module.exports = app => {
   app
     .route("/api/tags")
-    .get(verifyToken, catchError(tagController.fetchAllTags))
+    .get(catchError(tagController.fetchAllTags))
     .post(verifyToken, catchError(tagController.createTag));
 
   // this route is to fetch only tag detail

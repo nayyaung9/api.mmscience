@@ -27,7 +27,7 @@ exports.createTag = async (req, res) => {
         notiTargetRole: "ALL",
         specificSourceId: req.body.name,
         message: "create a new topic",
-        sourceUser: result.tagCreator,
+        sourceUser: result.tagCreator
       };
       await NotiController.createNewNotification(req.io, data);
       return res.status(200).json({ succes: true, data: result });
@@ -49,6 +49,7 @@ exports.getTagDetail = async (req, res) => {
       "tagCreator",
       "-email -password -following -isVerified -followers -createdAt -updatedAt -__v"
     )
+    .populate("_user", "-email -password -createdAt -updatedAt")
     .select("-__v");
   if (!tag) return res.status(404).send("Tag not found");
   return res.status(200).json({ succes: true, data: tag });
@@ -62,7 +63,7 @@ exports.detailTagPosts = async (req, res) => {
       match: { name: { $regex: name } }
     })
     .populate(
-      "user",
+      "_user",
       "-email -password -following -isVerified -followers -createdAt -updatedAt -__v"
     )
     .exec((err, items) => {
@@ -74,23 +75,23 @@ exports.detailTagPosts = async (req, res) => {
 exports.updateTagDetail = async (req, res) => {
   const { tagId } = req.params;
   const { name, description } = req.body;
-  console.log(name, description, tagId)
+  console.log(name, description, tagId);
   const tag = await Tag.findOneAndUpdate(
     { _id: tagId },
     {
       $set: {
         name,
-        description,
+        description
       }
     },
     { new: true }
   );
-  if(!tag) {
-    return res.status(500).send('tag not found');
+  if (!tag) {
+    return res.status(500).send("tag not found");
   }
 
   return res.status(200).json(tag);
-}
+};
 
 exports.deleteTag = async (req, res) => {
   const { id } = req.params;

@@ -51,7 +51,6 @@ exports.unFollowTag = async (req, res) => {
 
 exports.fetchTagFollowedUsers = async (req, res) => {
   const { tagId } = req.params;
-  console.log(tagId);
   try {
     const followers = await FollowableTag.find({})
       .populate({
