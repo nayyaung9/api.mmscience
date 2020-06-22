@@ -3,6 +3,7 @@
 const Tag = require("../models/Tag");
 const Post = require("../models/Post");
 const User = require("../models/User");
+const Notification = require("../models/Notification");
 var NotiController = require("./notiController");
 
 exports.fetchAllTags = async (req, res) => {
@@ -95,9 +96,12 @@ exports.updateTagDetail = async (req, res) => {
 
 exports.deleteTag = async (req, res) => {
   const { id } = req.params;
-  console.log("ID".id);
-  return await Tag.findByIdAndRemove(id, err => {
+  console.log('tagId', id);
+  return await Tag.findByIdAndRemove(id, async err => {
     if (err) return res.send("Tag cannot be delete");
+    await Notification.findOneAndRemove({
+      sourceId: id
+    });
     res.send("Delete Successfully");
   });
 };
