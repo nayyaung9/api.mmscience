@@ -24,7 +24,6 @@ exports.fetchUserTags = async (req, res) => {
 
 exports.fetchUserProfile = async (req, res) => {
   const { unique } = req.params;
-  console.log(unique);
   const user = await User.findOne({ uniqueId: unique });
   if (!user) return res.status(4040).send("User Not Found");
   return res.status(200).json({ succes: true, data: user });

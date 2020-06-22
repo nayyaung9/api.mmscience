@@ -35,6 +35,10 @@ var UserSchema = new Schema(
       type: String,
       default: null
     },
+    _point: {
+      type: Schema.Types.ObjectId,
+      ref: "Point"
+    },
     following: {
       tags: [
         {

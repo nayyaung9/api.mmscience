@@ -1,5 +1,6 @@
 const Post = require("../models/Post");
 const Notification = require("../models/Notification");
+const Point = require("../models/Point");
 var FollowableTag = require("../models/FollowableTag");
 var NotiController = require("./notiController");
 var mongoose = require("mongoose");
@@ -91,6 +92,7 @@ exports.createPost = async (req, res) => {
         feature_image: imgUrl
       });
       await post.save();
+      // for Notification
       let data = {
         onModel: "Post",
         sourceId: post._id,
@@ -100,6 +102,17 @@ exports.createPost = async (req, res) => {
         sourceUser: user_id
       };
       await NotiController.createNewNotification(req.io, data);
+      // for Notification
+
+      // for user point
+      await Point.findOneAndUpdate(
+        { _user: user_id },
+        { $inc: { points: 5 } },
+        { new: true,  strict: false }
+
+      );
+      // for user point
+
       return res.status(200).json({ success: true, data: post });
     } else {
       return res.status(500).send("Please try again");
@@ -205,7 +218,7 @@ exports.featureImgUpload = async (req, res) => {
     api_secret: CONFIG.cloudinary.api_secret
   });
   cloudinary.uploader
-    .upload(`${CONFIG.root}/public/featured_image/${image}`, {
+    .upload(`../${CONFIG.root}/public/featured_image/${image}`, {
       folder: "featured_image",
       use_filename: true,
       unique_filename: false

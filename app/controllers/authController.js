@@ -1,6 +1,7 @@
 "use strict";
 
 const User = require("../models/User");
+const Point = require("../models/Point");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const CONFIG = require("../../config/db");
@@ -27,6 +28,12 @@ exports.register = async (req, res) => {
         CONFIG.jwtSecret,
         {}
       );
+      const points = new Point({
+        _user: result._id,
+        points: 5
+      });
+      await points.save();
+
       const credentials = {
         id: result._id,
         fullname: result.fullname,
@@ -35,6 +42,7 @@ exports.register = async (req, res) => {
         email: result.email,
         uniqueId: result.uniqueId,
         isVerified: result.isVerified,
+        points: 5,
         token: token
       };
 
@@ -51,7 +59,7 @@ exports.register = async (req, res) => {
         to: email,
         subject: "Please Verify your mmscience account",
         html: accountVerifyTmpl({ fullname, uniId, email })
-      }
+      };
 
       mailer(accVerifyMail);
       mailer(msgObj);
@@ -65,7 +73,7 @@ exports.register = async (req, res) => {
   }
 };
 
-exports.login = (req, res, next) => {
+exports.login = async (req, res, next) => {
   const { email, password } = req.body;
 
   User.findOne({ email }, (err, user) => {
@@ -77,7 +85,7 @@ exports.login = (req, res, next) => {
     if (!user) {
       return res.status(404).send("User does not exist");
     }
-    bcrypt.compare(password, user.password, function(err, result) {
+    bcrypt.compare(password, user.password, async function(err, result) {
       if (err) {
         return res.status(401).send("Email or Password is incorrect");
       }
@@ -87,6 +95,20 @@ exports.login = (req, res, next) => {
           CONFIG.jwtSecret,
           {}
         );
+
+        let points;
+        await Point.findOne({ _user: user._id }, async (err, data) => {
+          if (!data) {
+            const points = new Point({
+              _user: user._id,
+              points: 5
+            });
+            await points.save();
+          } else {
+            points = data.hasDefaultPoints();
+          }
+        });
+
         const credentials = {
           id: user._id,
           fullname: user.fullname,
@@ -96,6 +118,7 @@ exports.login = (req, res, next) => {
           uniqueId: user.uniqueId,
           isVerified: user.isVerified,
           following: user.following,
+          points,
           token: token
         };
         const uniId = user.uniqueId;
@@ -111,14 +134,17 @@ exports.login = (req, res, next) => {
 
 exports.verify = async (req, res) => {
   const { id } = req.params;
-  const user = await User.findById(id).populate('following.tags', '-followers -following');
+  const user = await User.findById(id)
+    .populate("following.tags", "-followers -following")
+    .populate({
+      path: 'point'
+    });
+      console.log(user);
   if (!user) res.status(404).send(false);
   return res.status(200).send({ success: true, data: user });
 };
 
-
 exports.VerifyAccount = async (req, res) => {
-  console.log(req.params);
   const { user } = req.params;
   const updateUser = await User.findOneAndUpdate(
     { uniqueId: user },
@@ -129,7 +155,10 @@ exports.VerifyAccount = async (req, res) => {
     },
     { new: true }
   );
-  if (!updateUser) res.status(500).send("Your account can't be verify right now. Please try again");
+  if (!updateUser)
+    res
+      .status(500)
+      .send("Your account can't be verify right now. Please try again");
 
   return res.status(200).json({ success: true, data: updateUser });
 };
@@ -145,4 +174,4 @@ const accountVerifyTmpl = ({ fullname, uniId, email }) => {
     <a href="http://mmscience.netlify.app/user/${uniId}/account/confirmation">verify account</a>
   `;
   return mailBody;
-}
+};

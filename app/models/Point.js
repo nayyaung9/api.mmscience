@@ -14,4 +14,9 @@ var PointSchema = new Schema({
   timestamps: true
 });
 
+
+PointSchema.methods.hasDefaultPoints = function() {
+  return this.points;
+};
+
 module.exports = mongoose.model('Point', PointSchema);

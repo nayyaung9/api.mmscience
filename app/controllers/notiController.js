@@ -9,7 +9,10 @@ exports.getAllNotifications = async (req, res) => {
       "-_id -email -password -createdAt -isVerified -followers -following -updatedAt -__v"
     )
 
-    .populate("sourceId")
+    .populate({
+      path: 'sourceId',
+      populate: "tags"
+    })
     .sort([["_id", -1]]);
 
   if (notifications)
