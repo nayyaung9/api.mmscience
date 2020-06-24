@@ -127,7 +127,7 @@ exports.createPost = async (req, res) => {
 
 exports.getPostDetail = async (req, res) => {
   const post = await Post.findOne({ unique: req.params.unique })
-    .select("-_id -__v")
+    .select("-__v")
     .populate("user", "-__v -email -password -createdAt -updatedAt")
     .populate("tags", "-__v");
   if (!post) {

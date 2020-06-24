@@ -3,7 +3,6 @@ var Quiz = require("../models/Quiz");
 
 exports.fetchQuizCommentsByQuizId = async (req, res) => {
   const { quizId } = req.params;
-  console.log('qqqq', quizId);
   const quizComments = await QuizComment.find({ article_id: quizId })
     .select("-_id -__v")
     .populate("user", "-__v")
