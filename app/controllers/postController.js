@@ -91,6 +91,7 @@ exports.createPost = async (req, res) => {
         tags,
         feature_image: imgUrl
       });
+      console.log(post);
       await post.save();
       // for Notification
       let data = {
@@ -108,8 +109,7 @@ exports.createPost = async (req, res) => {
       await Point.findOneAndUpdate(
         { _user: user_id },
         { $inc: { points: 5 } },
-        { new: true,  strict: false }
-
+        { new: true, strict: false }
       );
       // for user point
 
@@ -212,6 +212,7 @@ exports.updatePost = async (req, res) => {
 
 exports.featureImgUpload = async (req, res) => {
   let image = req.app.locals.imgName;
+  console.log("IMG", image);
   cloudinary.config({
     cloud_name: CONFIG.cloudinary.name,
     api_key: CONFIG.cloudinary.api_key,
@@ -224,7 +225,14 @@ exports.featureImgUpload = async (req, res) => {
       unique_filename: false
     })
     .then(function(image) {
-      return res.status(200).send(image);
+      console.log('add', image);
+      return res.status(200).json({
+        success: 1,
+        file: {
+          url: image.secure_url
+          // ... and any additional fields you want to store, such as width, height, color, extension, etc
+        }
+      });
     })
     .catch(function(err) {
       if (err) {

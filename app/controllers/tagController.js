@@ -64,7 +64,7 @@ exports.detailTagPosts = async (req, res) => {
       match: { name: { $regex: name } }
     })
     .populate(
-      "_user",
+      "user",
       "-email -password -following -isVerified -followers -createdAt -updatedAt -__v"
     )
     .exec((err, items) => {
