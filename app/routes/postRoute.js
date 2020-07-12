@@ -60,7 +60,7 @@ module.exports = app => {
     .get(verifyToken, catchError(postController.getUserNewfeed));
   app
     .route("/api/posts")
-    .get(verifyToken, catchError(postController.fetchAllPosts))
+    .get(catchError(postController.fetchAllPosts))
     .post(
       verifyToken,
       uploadStore.any(),

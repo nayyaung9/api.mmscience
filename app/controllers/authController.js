@@ -93,7 +93,7 @@ exports.login = async (req, res, next) => {
         var token = jwt.sign(
           { credentials: `${user._id}.${CONFIG.jwtSecret}.${user.email}` },
           CONFIG.jwtSecret,
-          {}
+          { expiresIn: "365d" }
         );
 
         let points;
@@ -137,9 +137,9 @@ exports.verify = async (req, res) => {
   const user = await User.findById(id)
     .populate("following.tags", "-followers -following")
     .populate({
-      path: 'point'
+      path: "point"
     });
-      console.log(user);
+  console.log(user);
   if (!user) res.status(404).send(false);
   return res.status(200).send({ success: true, data: user });
 };
