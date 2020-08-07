@@ -9,7 +9,11 @@ module.exports = app => {
   app
     .route("/api/tags")
     .get(catchError(tagController.fetchAllTags))
-    .post(verifyToken, catchError(tagController.createTag));
+    .post(catchError(tagController.createTag));
+
+  app
+    .route("/api/parent/topics")
+    .get(catchError(tagController.fetchAllParentTopics));
 
   // this route is to fetch only tag detail
   app

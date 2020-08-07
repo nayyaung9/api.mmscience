@@ -23,9 +23,6 @@ var PostSchema = new Schema({
       ref: "Tag"
     }
   ],
-  feature_image: {
-    type: String,
-  },
   views: {
     type: Number,
     default: 0

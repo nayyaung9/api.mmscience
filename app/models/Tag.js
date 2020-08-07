@@ -5,7 +5,6 @@ var TagSchema = new Schema(
   {
     name: {
       type: String,
-      unique: true,
       lowercase: true,
       trim: true,
       required: true
@@ -13,16 +12,14 @@ var TagSchema = new Schema(
     description: {
       type: String
     },
+    parent: {
+      type: String,
+      default: 0,
+    },
     tagCreator: {
       type: Schema.Types.ObjectId,
-      ref: 'User',
+      ref: "User"
     },
-    _user: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: "User"
-      }
-    ],
   },
   {
     timestamps: true

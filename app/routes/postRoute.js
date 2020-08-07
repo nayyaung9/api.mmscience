@@ -17,12 +17,8 @@ const storage = multer.diskStorage({
     if (!file) {
       cb(null, false);
     } else {
-      var imgDateName = date.getTime();
-      var fileSplit = file.originalname.split(".");
-      var fileExtension = fileSplit[fileSplit.length - 1];
-      imgName =
-        imgName + "-" + imgDateName + "-mmscience" + "." + fileExtension;
-      cb(null, imgName);
+
+      cb(null, file.originalname + '-' + date.getTime());
     }
   }
 });
@@ -36,12 +32,7 @@ const commentStorage = multer.diskStorage({
     if (!file) {
       cb(null, false);
     } else {
-      var imgDateName = date.getTime();
-      var fileSplit = file.originalname.split(".");
-      var fileExtension = fileSplit[fileSplit.length - 1];
-      imgName =
-        imgName + "-" + imgDateName + "-mmscience" + "." + fileExtension;
-      cb(null, imgName);
+      cb(null, file.originalname + '-' + date.getTime());
     }
   }
 });
@@ -62,13 +53,7 @@ module.exports = app => {
     .route("/api/posts")
     .get(catchError(postController.fetchAllPosts))
     .post(
-      verifyToken,
-      uploadStore.any(),
-      function(req, res, next) {
-        req.app.locals.imgName = imgName;
-        imgName = "IMG";
-        next();
-      },
+      uploadStore.array('files'),
       catchError(postController.createPost)
     )
     .put(

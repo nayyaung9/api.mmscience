@@ -16,10 +16,26 @@ exports.fetchAllTags = async (req, res) => {
   return res.status(200).json({ succes: true, data: tags });
 };
 
+exports.fetchAllParentTopics = async (req, res) => {
+  const tags = await Tag.find({ parent: 0 })
+    .populate(
+      "_user",
+      "-email -password -following -isVerified -followers -createdAt -updatedAt -__v"
+    )
+    .select("-__v");
+  return res.status(200).json({ succes: true, data: tags });
+};
+
 exports.createTag = async (req, res) => {
-  const tag = Tag.findOne({ name: req.body.name });
+  const { name, parent, description } = req.body;
+  const tag = Tag.findOne({ name });
+
   if (tag) {
-    const newTag = new Tag(req.body);
+    const newTag = new Tag({
+      name,
+      parent: parent.length > 0 ? parent[0].year : 0,
+      description
+    });
     try {
       const result = await newTag.save();
       let data = {
@@ -96,7 +112,7 @@ exports.updateTagDetail = async (req, res) => {
 
 exports.deleteTag = async (req, res) => {
   const { id } = req.params;
-  console.log('tagId', id);
+  console.log("tagId", id);
   return await Tag.findByIdAndRemove(id, async err => {
     if (err) return res.send("Tag cannot be delete");
     await Notification.findOneAndRemove({

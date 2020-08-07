@@ -46,82 +46,45 @@ exports.fetchAllPosts = async (req, res) => {
 };
 
 exports.createPost = async (req, res) => {
-  const { title, content, words, user_id } = req.body;
-  let image = req.app.locals.imgName;
-  const postTags = JSON.parse(words);
+  const { title, content, topics, imageList, captionText } = req.body;
+  console.log("req.body", req.body);
+  let filePaths = req.files;
 
-  const tags = postTags.map(item => {
-    return item._id;
-  });
+  let imgList = [];
+  let upload_len = filePaths.length;
 
-  try {
-    let imgUploading = new Promise((resolve, reject) => {
-      cloudinary.config({
-        cloud_name: CONFIG.cloudinary.name,
-        api_key: CONFIG.cloudinary.api_key,
-        api_secret: CONFIG.cloudinary.api_secret
-      });
-      cloudinary.uploader
-        .upload(`../${CONFIG.root}/public/featured_image/${image}`, {
-          folder: "featured_image",
-          use_filename: true,
-          unique_filename: false
-        })
-        .then(function(image) {
-          let imgUrl = image.secure_url;
-          return resolve(imgUrl);
-        })
-        .catch(function(err) {
-          if (err) {
-            console.warn(err);
-          }
-        });
+  let multipleUpload = new Promise((resolve, reject) => {
+    cloudinary.config({
+      cloud_name: CONFIG.cloudinary.name,
+      api_key: CONFIG.cloudinary.api_key,
+      api_secret: CONFIG.cloudinary.api_secret
     });
 
-    let imgUrl = await imgUploading;
-    const factUniqueId = Math.random()
-      .toString(36)
-      .substring(7);
-    if (imgUrl) {
-      let post = new Post({
-        title,
-        content,
-        unique: factUniqueId,
-        user: user_id,
-        tags,
-        feature_image: imgUrl
-      });
-      console.log(post);
-      await post.save();
-      // for Notification
-      let data = {
-        onModel: "Post",
-        sourceId: post._id,
-        notiTargetRole: "ALL",
-        specificSourceId: factUniqueId,
-        message: "made a new fact",
-        sourceUser: user_id
-      };
-      await NotiController.createNewNotification(req.io, data);
-      // for Notification
+    upload_res = new Array();
 
-      // for user point
-      await Point.findOneAndUpdate(
-        { _user: user_id },
-        { $inc: { points: 5 } },
-        { new: true, strict: false }
-      );
-      // for user point
+    for (let i = 0; i < upload_len; i++) {
+      let filePath = filePaths[i];
 
-      return res.status(200).json({ success: true, data: post });
-    } else {
-      return res.status(500).send("Please try again");
+      cloudinary.uploader
+        .upload(filePath.path, {
+          folder: "featured_image",
+          unique_filename: true
+        })
+        .then(result => {
+          let imgUrl = result.secure_url;
+          imgList.push(imgUrl);
+          const caption = captionText.reverse();
+          var armixed = imgList.map(function(imgName, i) {
+            return [{ feature_image: imgName, text: caption[i] }];
+          });
+
+          return resolve(armixed.reverse());
+        })
+        .catch(error => error);
     }
-  } catch (err) {
-    if (err.name === "MongoError" && err.code === 11000) {
-      return res.status(500).send("There is a problem while creating a post");
-    }
-    return res.status(500).send(err.message);
+  });
+  for (let i = 0; i < upload_len; i++) {
+    console.log("final", imgList);
   }
 };
 
@@ -212,7 +175,7 @@ exports.updatePost = async (req, res) => {
 
 exports.featureImgUpload = async (req, res) => {
   let image = req.app.locals.imgName;
-  console.log("IMG", image);
+
   cloudinary.config({
     cloud_name: CONFIG.cloudinary.name,
     api_key: CONFIG.cloudinary.api_key,
@@ -225,7 +188,7 @@ exports.featureImgUpload = async (req, res) => {
       unique_filename: false
     })
     .then(function(image) {
-      console.log('add', image);
+      console.log("add", image);
       return res.status(200).json({
         success: 1,
         file: {

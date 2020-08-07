@@ -30,37 +30,10 @@ var UserSchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: "Role"
     },
-    isVerified: { type: Boolean, default: false },
     avatar_url: {
       type: String,
       default: null
-    },
-    _point: {
-      type: Schema.Types.ObjectId,
-      ref: "Point"
-    },
-    following: {
-      tags: [
-        {
-          type: Schema.Types.ObjectId,
-          ref: "Tag"
-        }
-      ],
-      users: [
-        {
-          type: Schema.Types.ObjectId,
-          ref: "User"
-        }
-      ]
-    },
-    followers: [
-      {
-        user: {
-          type: Schema.Types.ObjectId,
-          ref: "User"
-        }
-      }
-    ]
+    }
   },
   {
     timestamps: true
