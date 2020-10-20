@@ -7,45 +7,46 @@ var UserSchema = new Schema(
   {
     fullname: {
       type: String,
-      required: true
+      required: true,
     },
     email: {
       type: String,
       unique: true,
       required: true,
-      trim: true
+      trim: true,
     },
     password: {
       type: String,
-      required: true
+      required: true,
     },
     bio: {
       type: String,
-      default: null
+      default: null,
     },
     uniqueId: {
-      type: String
+      type: String,
     },
     role: {
       type: Schema.Types.ObjectId,
-      ref: "Role"
+      ref: "Role",
     },
     avatar_url: {
       type: String,
-      default: null
-    }
+      default: null,
+    },
+    isVerified: { type: Boolean, default: false },
   },
   {
-    timestamps: true
+    timestamps: true,
   }
 );
 
-UserSchema.pre("save", function(next) {
+UserSchema.pre("save", function (next) {
   // Check if document is new or a new password has been set
   if (this.isNew || this.isModified("password")) {
     // Saving reference to this because of changing scopes
     const document = this;
-    bcrypt.hash(document.password, saltRounds, function(err, hashedPassword) {
+    bcrypt.hash(document.password, saltRounds, function (err, hashedPassword) {
       if (err) {
         next(err);
       } else {
@@ -58,8 +59,8 @@ UserSchema.pre("save", function(next) {
   }
 });
 
-UserSchema.methods.isCorrectPassword = function(password, callback) {
-  bcrypt.compare(password, this.password, function(err, same) {
+UserSchema.methods.isCorrectPassword = function (password, callback) {
+  bcrypt.compare(password, this.password, function (err, same) {
     if (err) {
       callback(err);
     } else {

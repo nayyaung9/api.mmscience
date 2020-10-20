@@ -33,7 +33,7 @@ module.exports = function(app, config) {
       res.sendfile('public/index.html');
     });
 
-    app.get('/public/featured_image/:imageName', (req, res) => {
+    app.use('/public/featured_image/:imageName', (req, res) => {
       var options = {
         root: path.join(__dirname, '../public/featured_image/'),
       }

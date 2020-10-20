@@ -17,10 +17,9 @@ const storage = multer.diskStorage({
     if (!file) {
       cb(null, false);
     } else {
-
-      cb(null, file.originalname + '-' + date.getTime());
+      cb(null, file.originalname + "-" + date.getTime());
     }
-  }
+  },
 });
 
 const commentStorage = multer.diskStorage({
@@ -32,9 +31,9 @@ const commentStorage = multer.diskStorage({
     if (!file) {
       cb(null, false);
     } else {
-      cb(null, file.originalname + '-' + date.getTime());
+      cb(null, file.originalname + "-" + date.getTime());
     }
-  }
+  },
 });
 
 const uploadStore = multer({
@@ -42,24 +41,21 @@ const uploadStore = multer({
 });
 
 const commentUploadStore = multer({
-  storage: commentStorage
+  storage: commentStorage,
 });
 
-module.exports = app => {
+module.exports = (app) => {
   app
     .route("/api/feed/:unique")
     .get(verifyToken, catchError(postController.getUserNewfeed));
   app
     .route("/api/posts")
     .get(catchError(postController.fetchAllPosts))
-    .post(
-      uploadStore.array('files'),
-      catchError(postController.createPost)
-    )
+    .post(uploadStore.array("files"), catchError(postController.createPost))
     .put(
       verifyToken,
       uploadStore.any(),
-      function(req, res, next) {
+      function (req, res, next) {
         req.app.locals.imgName = imgName;
         imgName = "IMG";
         next();
@@ -76,7 +72,7 @@ module.exports = app => {
   app.route("/api/post/comment").post(
     verifyToken,
     commentUploadStore.any(),
-    function(req, res, next) {
+    function (req, res, next) {
       req.app.locals.imgName = imgName;
       imgName = "IMG";
       next();
@@ -93,14 +89,7 @@ module.exports = app => {
     .get(verifyToken, catchError(factCommentController.editFactComment))
     .put(verifyToken, catchError(factCommentController.updateFactComment));
 
-  app.route("/api/featured_image/upload").post(
-    verifyToken,
-    uploadStore.any(),
-    function(req, res, next) {
-      req.app.locals.imgName = imgName;
-      imgName = "IMG";
-      next();
-    },
-    catchError(postController.featureImgUpload)
-  );
+  app
+    .route("/api/featured_image/upload")
+    .post(catchError(postController.featureImgUpload));
 };
